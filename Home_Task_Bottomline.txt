@@ -1,0 +1,152 @@
+3. Containerize the spring boot app using any container engine you would like (e.g. 
+Docker, Podman) and run it, exporting the URL port (9090).
+---------------------------------------------------------------------------------
+#Base Image
+FROM openjdk:11-jre-slim
+
+##directory in container
+WORKDIR /app
+
+#cpy the jar file
+COPY target/sample-spring-boot-app.jar app.jar
+
+#port which is running the application
+EXPOSE 9090
+
+##start the container
+CMD ["java", "-jar", "app.jar"]
+
+##Build the Image
+docker build -t spring-boot-app .
+
+##Run the image as container with port number:
+docker run -p 9090:9090 spring-boot-app
+
+
+Access the application:
+-----------------------
+http://localhost:9090/
+
+
+========================================================================================================================================================
+4. Create a Helm chart for the app and deploy it on any K8S distribution of your choice.
+
+-  helm create my-spring-boot-app
+
+Values.yaml:
+------------
+replicaCount: 1
+
+image:
+  repository: Bottomline_home_tasks/spring-boot-app
+  tag: latest
+
+service:
+  name: my-spring-boot-app
+  type: ClusterIP
+  port: 9090
+
+
+Deployment.yaml:
+----------------
+# templates/deployment.yaml
+...
+spec:
+  containers:
+    - name: {{ .Chart.Name }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      ...
+      volumeMounts:
+        - name: app-volume
+          mountPath: /app
+  volumes:
+    - name: app-volume
+      configMap:
+        name: {{ include "my-spring-boot-app.fullname" . }}
+
+
+##Build and push the images:
+docker build -t Bottomline_home_tasks/spring-boot-app .
+docker push Bottomline_home_tasks/spring-boot-app
+
+
+helm install my-spring-boot-app ./my-spring-boot-app
+
+
+kubectl get pods
+
+kubectl get services
+
+
+=========================================================================================================================================================
+5. Bonus: Provision a Jenkins server and create a declarative multibranch pipeline that 
+deploys the app onto the Kubernetes cluster you created in part 4
+
+pipeline {
+       agent any
+
+       environment {
+           KUBECONFIG = credentials('sai-kubeconfig-credential-id')
+       }
+
+## Build with the maven
+       stages {
+           stage('Build') {
+               steps {
+                   script {
+                       sh 'mvn clean package'
+                   }
+               }
+           }
+
+##Docker build and push 
+           stage('Docker Build & Push') {
+               steps {
+                   script {
+                       sh 'docker build -t sai-docker-repo/spring-boot-app .'
+                       sh 'docker push sai-docker-repo/spring-boot-app'
+                   }
+               }
+           }
+
+## Deploy to Kubernetes
+           stage('Deploy to Kubernetes') {
+               steps {
+                   script {
+                       sh 'kubectl apply -f k8s/deployment.yaml'
+                   }
+               }
+           }
+       }
+   }
+
+
+=========================================================================================================================================================
+1. Create a spring boot app that prints “hello-world-$counter” ($counter should increment on every refresh).
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>Welcome to my page</h1>
+</body>
+</html>
+
+
+===========================================================================================================================================================
+2. Create an Uber jar for the spring boot app and execute your jar from the command line.
+
+##Create an pom.xml file
+
+
+##Build the Uber JAR:
+mvn clean package
+
+After building the pom.xml we will get an jar file 
+
+##Execute the Jar file 
+java -jar target/My-app.jar
+
+
