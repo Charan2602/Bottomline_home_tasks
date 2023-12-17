@@ -1,25 +1,21 @@
 3. Containerize the spring boot app using any container engine you would like (e.g.Docker, Podman) and run it, exporting the URL port (9090).
-----------------------------------------------------------------------------------------------
-#Base Image
-FROM openjdk:11-jre-slim
+---------------------------------------------------------------------------------
+# Base Image
+FROM openjdk:17-jre-slim
 
-##directory in container
+
+# Directory in the container
 WORKDIR /app
 
-#cpy the jar file
-COPY target/sample-spring-boot-app.jar app.jar
+# Copy the JAR file
+COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
 
-#port which is running the application
+# Port on which the application is running
 EXPOSE 9090
 
-##start the container
+# Start the container
 CMD ["java", "-jar", "app.jar"]
 
-##Build the Image
-docker build -t spring-boot-app .
-
-##Run the image as container with port number:
-docker run -p 9090:9090 spring-boot-app
 
 
 Access the application:
@@ -27,7 +23,8 @@ Access the application:
 http://localhost:9090/
 
 
-============================================================================================================================
+
+=============================================================================================================================
 4. Create a Helm chart for the app and deploy it on any K8S distribution of your choice.
 
 -  helm create my-spring-boot-app
@@ -49,6 +46,7 @@ service:
 Deployment.yaml:
 ----------------
 # templates/deployment.yaml
+...
 spec:
   containers:
     - name: {{ .Chart.Name }}
@@ -76,7 +74,7 @@ kubectl get pods
 kubectl get services
 
 
-============================================================================================================================
+=============================================================================================================================
 5. Bonus: Provision a Jenkins server and create a declarative multibranch pipeline that deploys the app onto the Kubernetes cluster you created in part 4
 
 pipeline {
@@ -118,8 +116,9 @@ pipeline {
    }
 
 
-============================================================================================================================
+=============================================================================================================================
 1. Create a spring boot app that prints “hello-world-$counter” ($counter should increment on every refresh).
+
 
 Write the Controller:##
 -------------------------
@@ -143,6 +142,7 @@ public class HelloController {
 }
 
 
+
 #Create a Thymeleaf Template:
 ------------------------------
 ##Create a Thymeleaf template file (src/main/resources/templates/hello.html) to display the message.
@@ -160,9 +160,11 @@ public class HelloController {
 
 
 ##Access the Application:
+
 http://localhost:8080/
 
-============================================================================================================================
+
+===========================================================================================================================================================
 2. Create an Uber jar for the spring boot app and execute your jar from the command line.
 
 ##Create an pom.xml file
