@@ -1,5 +1,5 @@
 3. Containerize the spring boot app using any container engine you would like (e.g.Docker, Podman) and run it, exporting the URL port (9090).
----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
 #Base Image
 FROM openjdk:11-jre-slim
 
@@ -77,9 +77,8 @@ kubectl get pods
 kubectl get services
 
 
-===========================================================================================================================
-5. Bonus: Provision a Jenkins server and create a declarative multibranch pipeline that 
-deploys the app onto the Kubernetes cluster you created in part 4
+============================================================================================================================
+5. Bonus: Provision a Jenkins server and create a declarative multibranch pipeline that deploys the app onto the Kubernetes cluster you created in part 4
 
 pipeline {
        agent any
@@ -139,6 +138,42 @@ pipeline {
 
 ##Create an pom.xml file
 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>my-spring-boot-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.2</version> <!-- Use the latest Spring Boot version -->
+    </parent>
+
+    <dependencies>
+        <!-- Your dependencies go here -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
 
 ##Build the Uber JAR:
 mvn clean package
@@ -146,6 +181,6 @@ mvn clean package
 After building the pom.xml we will get an jar file 
 
 ##Execute the Jar file 
-java -jar target/My-app.jar
+java -jar target/my-spring-boot-app-1.0.0.jar
 
 
