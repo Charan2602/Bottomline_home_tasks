@@ -49,7 +49,6 @@ service:
 Deployment.yaml:
 ----------------
 # templates/deployment.yaml
-...
 spec:
   containers:
     - name: {{ .Chart.Name }}
